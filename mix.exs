@@ -1,7 +1,7 @@
 defmodule Noizu.Google.MixProject do
   use Mix.Project
 
-  @version "0.2.3"
+  @version "0.2.4"
   @source_url "https://github.com/noizu-labs/elixir-google"
   @hexdocs_url "https://hexdocs.pm/noizu_google"
 
@@ -26,7 +26,7 @@ defmodule Noizu.Google.MixProject do
   def application do
     [
       mod: {Noizu.Google.Application, []},
-      extra_applications: [:logger, :crypto]
+      extra_applications: [:logger, :crypto, :public_key]
     ]
   end
 
@@ -46,7 +46,7 @@ defmodule Noizu.Google.MixProject do
   # Hex.pm description: a short paragraph, max 300 characters.
   defp description do
     """
-    Google REST API client for Elixir. OAuth2 (authorize, token, refresh), Finch + Jason HTTP, and structured errors. Search Console, GA4 Admin/Data, AdSense Management, and Google Ads (GAQL search, mutate, conversion actions).
+    Google REST API client for Elixir. OAuth2 (authorize, token, refresh) plus service-account JWT bearer, Finch + Jason HTTP, and structured errors. Search Console, GA4 Admin/Data, AdSense Management, and Google Ads (GAQL search, mutate, conversion actions).
     """
     |> String.trim()
   end
@@ -115,6 +115,7 @@ defmodule Noizu.Google.MixProject do
           Noizu.Google.Error,
           Noizu.Google.HTTP,
           Noizu.Google.OAuth,
+          Noizu.Google.ServiceAccount,
           Noizu.Google.Scopes
         ],
         "API — Search Console": [

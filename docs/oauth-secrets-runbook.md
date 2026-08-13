@@ -123,16 +123,38 @@ eval "$(bash terraform/marketing/scripts/load-env.sh)"
 | `GOOGLE_MARKETING_ACCESS_TOKEN` | Preferred alias for MCP/TF |
 | `GOOGLE_REFRESH_TOKEN` | MCP via `Client.ensure_access_token/1` |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Refresh |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Path to service-account JSON (JWT bearer) |
+| `GOOGLE_CREDENTIALS_FILE` / `GOOGLE_SERVICE_ACCOUNT_FILE` | Aliases for the JSON path |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Inline service-account JSON (MCP; avoid in shell history) |
+| `GOOGLE_SCOPES` | Space-separated scopes for the service-account grant |
+| `GOOGLE_SUBJECT` / `GOOGLE_IMPERSONATE` | Domain-wide delegation subject |
 | `GOOGLE_ADS_DEVELOPER_TOKEN` | Ads API (MCP + TF ads resources) |
 | `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | MCC |
 
 MCP also accepts `GOOGLE_MARKETING_REFRESH_TOKEN` / `_CLIENT_ID` / `_CLIENT_SECRET`.
 
+### Service account (Search Console)
+
+1. Create a GCP service account and download the JSON key. **Do not commit it.**
+2. Enable the Search Console API on the project.
+3. In Search Console, **Settings → Users and permissions**, add the service
+   account email (`...@....iam.gserviceaccount.com`) on each property.
+4. Point the SDK / MCP at the file:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/path/to/sa.json"
+export GOOGLE_SCOPES="https://www.googleapis.com/auth/webmasters"
+```
+
+`Client.ensure_access_token/1` signs a JWT and exchanges it at
+`https://oauth2.googleapis.com/token`. User OAuth (access / refresh token)
+still wins when those env vars are set.
+
 ## 5. MCP
 
 ```bash
 cd Portfolio/Libs/ai/elixir-google-mcp
-export GOOGLE_ACCESS_TOKEN=...   # or refresh trio
+export GOOGLE_ACCESS_TOKEN=...   # or refresh trio or GOOGLE_APPLICATION_CREDENTIALS
 export GOOGLE_ADS_DEVELOPER_TOKEN=...  # for Ads tools
 mix run --no-halt
 ```

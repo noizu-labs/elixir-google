@@ -6,9 +6,10 @@
 
 Google REST API client for Elixir.
 
-OAuth2 bearer auth (authorize, token exchange, refresh), a Finch + Jason HTTP
-stack, structured errors, and thin wrappers for the marketing APIs: Search
-Console, GA4 Admin/Data, AdSense Management, and Google Ads.
+OAuth2 bearer auth (authorize, token exchange, refresh, or service-account JWT
+bearer), a Finch + Jason HTTP stack, structured errors, and thin wrappers for
+the marketing APIs: Search Console, GA4 Admin/Data, AdSense Management, and
+Google Ads.
 
 This is a hand-written REST client, not a generated Google API surface. Pass a
 `%Noizu.Google.Client{}` on each call, or omit it to use application config.
@@ -18,7 +19,7 @@ This is a hand-written REST client, not a generated Google API surface. Pass a
 ```elixir
 def deps do
   [
-    {:noizu_google, "~> 0.2.3"}
+    {:noizu_google, "~> 0.2.4"}
   ]
 end
 ```
@@ -35,6 +36,8 @@ config :noizu_google,
   refresh_token: System.get_env("GOOGLE_REFRESH_TOKEN"),
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET"),
+  # Service account (alternative to user OAuth):
+  credentials_file: System.get_env("GOOGLE_APPLICATION_CREDENTIALS"),
   # Google Ads only:
   developer_token: System.get_env("GOOGLE_ADS_DEVELOPER_TOKEN"),
   login_customer_id: System.get_env("GOOGLE_ADS_LOGIN_CUSTOMER_ID")
@@ -52,8 +55,13 @@ client = Noizu.Google.client(
 Noizu.Google.Api.SearchConsole.Sites.list(client: client)
 ```
 
-When only a refresh token is configured, `Noizu.Google.Client.ensure_access_token/1`
-exchanges it for an access token.
+`Noizu.Google.Client.ensure_access_token/1` fills `access_token` from, in
+order: an existing bearer token, a service-account JSON file/map
+(`:credentials_file` / `:service_account`), or an OAuth refresh token.
+
+Service-account keys must not be committed. Point `:credentials_file` at a
+local JSON key (or set `GOOGLE_APPLICATION_CREDENTIALS`). For Search Console
+the service account email must be added as a user on each property.
 
 ## Quick examples
 
@@ -254,7 +262,8 @@ it in production.
 | `Noizu.Google` | Facade (`client/0`, base URL helpers) |
 | `Noizu.Google.Client` | Credentials + per-product base URLs |
 | `Noizu.Google.HTTP` | GET/POST/PUT/PATCH/DELETE JSON + bearer auth |
-| `Noizu.Google.OAuth` | Authorize URL, token exchange, refresh |
+| `Noizu.Google.OAuth` | Authorize URL, token exchange, refresh, JWT bearer |
+| `Noizu.Google.ServiceAccount` | Service-account JSON + JWT assertion |
 | `Noizu.Google.Scopes` | OAuth scope constants |
 | `Noizu.Google.Error` | HTTP / transport / codec / config |
 | `Noizu.Google.Api.SearchConsole.*` | Sites, SearchAnalytics, Sitemaps |

@@ -18,6 +18,10 @@ defmodule Noizu.Google.Client do
           refresh_token: String.t() | nil,
           client_id: String.t() | nil,
           client_secret: String.t() | nil,
+          credentials_file: String.t() | nil,
+          service_account: map() | nil,
+          subject: String.t() | nil,
+          scopes: String.t() | [String.t()] | nil,
           api_base: String.t(),
           webmasters_base: String.t(),
           analytics_admin_base: String.t(),
@@ -35,6 +39,10 @@ defmodule Noizu.Google.Client do
             refresh_token: nil,
             client_id: nil,
             client_secret: nil,
+            credentials_file: nil,
+            service_account: nil,
+            subject: nil,
+            scopes: nil,
             api_base: "https://www.googleapis.com/",
             webmasters_base: "https://www.googleapis.com/webmasters/v3/",
             analytics_admin_base: "https://analyticsadmin.googleapis.com/v1beta/",
@@ -59,6 +67,10 @@ defmodule Noizu.Google.Client do
       refresh_token: pick(opts, :refresh_token),
       client_id: pick(opts, :client_id),
       client_secret: pick(opts, :client_secret),
+      credentials_file: pick(opts, :credentials_file),
+      service_account: pick(opts, :service_account),
+      subject: pick(opts, :subject),
+      scopes: pick(opts, :scopes),
       api_base: pick(opts, :api_base, "https://www.googleapis.com/"),
       webmasters_base:
         pick(opts, :webmasters_base, "https://www.googleapis.com/webmasters/v3/"),
@@ -107,7 +119,13 @@ defmodule Noizu.Google.Client do
   end
 
   @doc """
-  Ensure a usable access token, refreshing when only a refresh_token is set.
+  Ensure a usable access token.
+
+  Resolution order:
+
+  1. Existing `access_token`
+  2. Service-account JSON (`service_account` map or `credentials_file`)
+  3. OAuth `refresh_token` (+ client id/secret)
 
   Returns `{:ok, client}` with `access_token` populated, or an error.
   """
@@ -117,8 +135,55 @@ defmodule Noizu.Google.Client do
     {:ok, client}
   end
 
-  def ensure_access_token(%__MODULE__{refresh_token: refresh} = client)
-      when is_binary(refresh) and refresh != "" do
+  def ensure_access_token(%__MODULE__{} = client) do
+    cond do
+      service_account_configured?(client) ->
+        fetch_service_account_token(client)
+
+      is_binary(client.refresh_token) and client.refresh_token != "" ->
+        refresh_user_token(client)
+
+      true ->
+        {:error,
+         Error.config(
+           "Google access_token, refresh_token, or service account is not configured"
+         )}
+    end
+  end
+
+  defp service_account_configured?(%__MODULE__{service_account: map})
+       when is_map(map) and map_size(map) > 0,
+       do: true
+
+  defp service_account_configured?(%__MODULE__{credentials_file: path})
+       when is_binary(path) and path != "",
+       do: true
+
+  defp service_account_configured?(_), do: false
+
+  defp fetch_service_account_token(%__MODULE__{} = client) do
+    source =
+      cond do
+        is_map(client.service_account) and map_size(client.service_account) > 0 ->
+          client.service_account
+
+        true ->
+          client.credentials_file
+      end
+
+    opts = [
+      client: client,
+      scope: client.scopes,
+      subject: client.subject
+    ]
+
+    case Noizu.Google.ServiceAccount.access_token(source, opts) do
+      {:ok, token} -> {:ok, put_access_token(client, token)}
+      {:error, _} = err -> err
+    end
+  end
+
+  defp refresh_user_token(%__MODULE__{refresh_token: refresh} = client) do
     case Noizu.Google.OAuth.refresh_token(refresh, client: client, decode: :strings) do
       {:ok, %{"access_token" => token}} when is_binary(token) and token != "" ->
         {:ok, put_access_token(client, token)}
@@ -129,10 +194,6 @@ defmodule Noizu.Google.Client do
       {:error, _} = err ->
         err
     end
-  end
-
-  def ensure_access_token(%__MODULE__{}) do
-    {:error, Error.config("Google access_token or refresh_token is not configured")}
   end
 
   @doc "Normalize API base URL (trailing slash)."

@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.4
+
+- Service-account JSON credentials (`Noizu.Google.ServiceAccount`)
+- JWT bearer grant (`OAuth.jwt_bearer/2`)
+- `Client.ensure_access_token/1` accepts `credentials_file` / `service_account`
+
 ## 0.2.3
 
 - Mix tasks: `google.oauth.authorize`, `google.oauth.exchange` (optional `--write-dc`)

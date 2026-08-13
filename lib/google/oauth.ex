@@ -157,6 +157,39 @@ defmodule Noizu.Google.OAuth do
     end
   end
 
+  @doc """
+  Exchange a signed JWT for an access token (service-account grant).
+
+      Noizu.Google.OAuth.jwt_bearer(assertion, client: client)
+
+  ## Options
+  * `:client`
+  * `:url` — token endpoint (default `client.oauth_base <> "token"`)
+  * `:decode` — passed to `HTTP.form_post/3`
+  """
+  @jwt_bearer "urn:ietf:params:oauth:grant-type:jwt-bearer"
+
+  @spec jwt_bearer(String.t(), options()) :: {:ok, map()} | {:error, Error.t()}
+  def jwt_bearer(assertion, opts \\ []) when is_binary(assertion) do
+    opts = normalize(opts)
+    client = Keyword.get(opts, :client) || Client.default()
+
+    if assertion == "" do
+      {:error, Error.config("jwt assertion required")}
+    else
+      url =
+        Keyword.get(opts, :url) || Client.normalize_base(client.oauth_base) <> "token"
+
+      HTTP.form_post(
+        url,
+        [grant_type: @jwt_bearer, assertion: assertion],
+        client: client,
+        auth: :none,
+        decode: Keyword.get(opts, :decode, :strings)
+      )
+    end
+  end
+
   defp normalize(nil), do: []
   defp normalize(opts) when is_list(opts), do: opts
   defp normalize(opts) when is_map(opts), do: Map.to_list(opts)

@@ -2,8 +2,9 @@ defmodule Noizu.Google do
   @moduledoc """
   Google REST API client for Elixir.
 
-  OAuth2 bearer auth, Finch + Jason HTTP, structured errors, and thin wrappers
-  for Search Console, GA4 Admin/Data, AdSense Management, and Google Ads.
+  OAuth2 bearer auth (user refresh tokens or service-account JWT), Finch + Jason
+  HTTP, structured errors, and thin wrappers for Search Console, GA4 Admin/Data,
+  AdSense Management, and Google Ads.
 
   ## Quick start
 
@@ -38,7 +39,8 @@ defmodule Noizu.Google do
 
   * `Noizu.Google.Client` — credentials + base URLs
   * `Noizu.Google.HTTP` — REST GET/POST/PUT/PATCH/DELETE with JSON + bearer auth
-  * `Noizu.Google.OAuth` — authorize URL, code exchange, refresh
+  * `Noizu.Google.OAuth` — authorize URL, code exchange, refresh, JWT bearer
+  * `Noizu.Google.ServiceAccount` — service-account JSON / JWT assertion
   * `Noizu.Google.Scopes` — common OAuth scope constants
   * `Noizu.Google.Api.*` — endpoint modules by Google product
   * `Noizu.Google.Error` — structured errors
