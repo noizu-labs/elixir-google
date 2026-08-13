@@ -1,8 +1,12 @@
 # Changelog
 
+All notable changes to this project are documented in this file.
+This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## 0.2.3
 
 - Mix tasks: `google.oauth.authorize`, `google.oauth.exchange` (optional `--write-dc`)
+- Hex package description, links, HexDocs extras/groups, and public README
 
 ## 0.2.2
 

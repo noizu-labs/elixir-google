@@ -3,6 +3,8 @@ defmodule Noizu.Google.Api.AdSense.Reports do
   AdSense Management API v2 — **Reports** (generate).
 
   REST: `accounts/{account}/reports:generate`
+
+  Docs: https://developers.google.com/adsense/management/reference/rest/v2/accounts.reports/generate
   """
 
   use Noizu.Google.Api

@@ -16,9 +16,15 @@ defmodule Noizu.GoogleTest do
     assert client.access_token == "override"
   end
 
-  test "api_base and webmasters_base helpers" do
+  test "base URL helpers" do
     assert is_binary(Noizu.Google.api_base())
     assert is_binary(Noizu.Google.webmasters_base())
+    assert is_binary(Noizu.Google.analytics_admin_base())
+    assert is_binary(Noizu.Google.analytics_data_base())
+    assert is_binary(Noizu.Google.adsense_base())
+    assert is_binary(Noizu.Google.google_ads_base())
+    assert Noizu.Google.adsense_base() =~ "adsense"
+    assert Noizu.Google.google_ads_base() =~ "googleads"
   end
 
   test "Application starts named Finch pool" do

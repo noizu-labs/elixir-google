@@ -3,6 +3,7 @@ defmodule Noizu.Google.MixProject do
 
   @version "0.2.3"
   @source_url "https://github.com/noizu-labs/elixir-google"
+  @hexdocs_url "https://hexdocs.pm/noizu_google"
 
   def project do
     [
@@ -17,7 +18,7 @@ defmodule Noizu.Google.MixProject do
       deps: deps(),
       docs: docs(),
       source_url: @source_url,
-      homepage_url: @source_url,
+      homepage_url: @hexdocs_url,
       test_coverage: [summary: [threshold: 30]]
     ]
   end
@@ -42,11 +43,12 @@ defmodule Noizu.Google.MixProject do
     ]
   end
 
+  # Hex.pm description: a short paragraph, max 300 characters.
   defp description do
     """
-    Google REST API client for Elixir — OAuth2 bearer auth, Finch + Jason HTTP,
-    structured errors, Search Console, and GA4 Admin/Data APIs (AdSense/Ads next).
+    Google REST API client for Elixir. OAuth2 (authorize, token, refresh), Finch + Jason HTTP, and structured errors. Search Console, GA4 Admin/Data, AdSense Management, and Google Ads (GAQL search, mutate, conversion actions).
     """
+    |> String.trim()
   end
 
   defp package do
@@ -57,9 +59,14 @@ defmodule Noizu.Google.MixProject do
       links: %{
         "GitHub" => @source_url,
         "Changelog" => "#{@source_url}/blob/main/CHANGELOG.md",
+        "HexDocs" => @hexdocs_url,
         "Search Console API" => "https://developers.google.com/webmaster-tools",
         "Analytics Admin API" =>
           "https://developers.google.com/analytics/devguides/config/admin/v1",
+        "Analytics Data API" =>
+          "https://developers.google.com/analytics/devguides/reporting/data/v1",
+        "AdSense Management API" => "https://developers.google.com/adsense/management",
+        "Google Ads API" => "https://developers.google.com/google-ads/api/docs/start",
         "Noizu Labs" => "https://github.com/noizu-labs"
       },
       files: ~w(
@@ -77,13 +84,29 @@ defmodule Noizu.Google.MixProject do
   defp docs do
     [
       main: "readme",
+      authors: ["Keith Brings"],
       source_ref: "v#{@version}",
       source_url: @source_url,
+      homepage_url: @hexdocs_url,
       extras: [
         "README.md",
         "CHANGELOG.md",
-        "docs/ADR-001-marketing-control-plane.md",
-        "docs/oauth-secrets-runbook.md"
+        {"docs/oauth-secrets-runbook.md", [title: "OAuth & secrets runbook"]},
+        {"docs/ADR-001-marketing-control-plane.md", [title: "ADR-001: Marketing control plane"]}
+      ],
+      groups_for_extras: [
+        Guides: [
+          "docs/oauth-secrets-runbook.md",
+          "docs/ADR-001-marketing-control-plane.md"
+        ]
+      ],
+      skip_undefined_reference_warnings_on: ["CHANGELOG.md"],
+      nest_modules_by_prefix: [
+        Noizu.Google.Api.SearchConsole,
+        Noizu.Google.Api.AnalyticsAdmin,
+        Noizu.Google.Api.AnalyticsData,
+        Noizu.Google.Api.AdSense,
+        Noizu.Google.Api.Ads
       ],
       groups_for_modules: [
         Core: [
@@ -115,6 +138,10 @@ defmodule Noizu.Google.MixProject do
         ],
         "API — Google Ads": [
           Noizu.Google.Api.Ads.Customers
+        ],
+        "Mix Tasks": [
+          Mix.Tasks.Google.Oauth.Authorize,
+          Mix.Tasks.Google.Oauth.Exchange
         ]
       ]
     ]

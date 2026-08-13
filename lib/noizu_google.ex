@@ -1,6 +1,9 @@
 defmodule Noizu.Google do
   @moduledoc """
-  Noizu Google — Google REST API client for Elixir.
+  Google REST API client for Elixir.
+
+  OAuth2 bearer auth, Finch + Jason HTTP, structured errors, and thin wrappers
+  for Search Console, GA4 Admin/Data, AdSense Management, and Google Ads.
 
   ## Quick start
 
@@ -51,10 +54,15 @@ defmodule Noizu.Google do
   | `Api.AnalyticsAdmin.Properties` | GA4 properties |
   | `Api.AnalyticsAdmin.DataStreams` | GA4 data streams |
   | `Api.AnalyticsData.Reports` | GA4 Data API runReport |
+  | `Api.AdSense.Accounts` | AdSense accounts |
+  | `Api.AdSense.AdClients` | AdSense ad clients |
+  | `Api.AdSense.AdUnits` | AdSense ad units |
+  | `Api.AdSense.Reports` | AdSense reports:generate |
+  | `Api.Ads.Customers` | Google Ads search / mutate / conversion actions |
 
   Pass `%Client{}` via `opts[:client]` (or omit to use application config defaults).
 
-  See `docs/ADR-001-marketing-control-plane.md` for MCP + Terraform packaging.
+  See the HexDocs extras for the OAuth runbook and ADR-001 (MCP + Terraform).
   """
 
   alias Noizu.Google.Client
@@ -74,4 +82,10 @@ defmodule Noizu.Google do
 
   @doc "Default GA4 Data API base URL."
   def analytics_data_base, do: Client.default().analytics_data_base
+
+  @doc "Default AdSense Management API base URL."
+  def adsense_base, do: Client.default().adsense_base
+
+  @doc "Default Google Ads API base URL."
+  def google_ads_base, do: Client.default().google_ads_base
 end

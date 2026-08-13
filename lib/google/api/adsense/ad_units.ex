@@ -3,6 +3,8 @@ defmodule Noizu.Google.Api.AdSense.AdUnits do
   AdSense Management API v2 — **AdUnits**.
 
   REST: `accounts/{account}/adclients/{adClient}/adunits`
+
+  Docs: https://developers.google.com/adsense/management/reference/rest/v2/accounts.adclients.adunits
   """
 
   use Noizu.Google.Api

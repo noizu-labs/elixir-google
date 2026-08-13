@@ -3,7 +3,13 @@ defmodule Noizu.Google.Scopes do
   Common OAuth2 scope URLs for Google marketing APIs.
 
   Pass one or more (space-separated) to `Noizu.Google.OAuth.authorize_url/1`
-  via the `:scope` option.
+  via the `:scope` option, or use `marketing_default/0` / `join/1`.
+
+      Noizu.Google.OAuth.authorize_url(
+        client_id: id,
+        redirect_uri: uri,
+        scope: Noizu.Google.Scopes.marketing_default()
+      )
   """
 
   @search_console "https://www.googleapis.com/auth/webmasters"

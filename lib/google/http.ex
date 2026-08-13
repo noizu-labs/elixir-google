@@ -2,8 +2,9 @@ defmodule Noizu.Google.HTTP do
   @moduledoc """
   Low-level HTTP helpers for Google REST APIs.
 
-  Supports JSON GET/POST/PUT/DELETE with OAuth2 bearer tokens. Bases are taken
-  from the client (`api_base`, `webmasters_base`, or an absolute URL).
+  JSON GET/POST/PUT/PATCH/DELETE with OAuth2 bearer tokens. `:base` selects a
+  client URL (`:api`, `:webmasters`, `:analytics_admin`, `:analytics_data`,
+  `:adsense`, `:google_ads`) or an absolute URL string.
   """
 
   alias Noizu.Google.Client
@@ -17,7 +18,8 @@ defmodule Noizu.Google.HTTP do
 
   ## Options
   * `:client` — `%Noizu.Google.Client{}` (default: `Client.default()`)
-  * `:base` — `:api` (default), `:webmasters`, or an absolute base URL string
+  * `:base` — `:api` (default), `:webmasters`, `:analytics_admin`,
+    `:analytics_data`, `:adsense`, `:google_ads`, or an absolute base URL string
   * `:query` — query map/keyword list
   * `:decode` — `:atoms` (default), `:strings`, `:raw`, or a module with `from_json/1`
   * `:auth` — `:user` (default bearer), `:none`

@@ -1,6 +1,14 @@
 defmodule Noizu.Google.Error do
   @moduledoc """
   Structured error returned by Google API calls.
+
+  Raised as an exception when needed (`defexception`), but the HTTP and API
+  modules return `{:error, %Noizu.Google.Error{}}` instead of raising.
+
+  * `:reason` — `:http_error`, `:config`, or the underlying transport/codec term
+  * `:tag` — Google `error.status` / `error.code`, or `:transport` / `:codec` / `:config`
+  * `:status` — HTTP status when the response arrived
+  * `:body` — decoded JSON (or raw body) from Google
   """
 
   defexception [:message, :status, :body, :reason, :summary, :tag]
